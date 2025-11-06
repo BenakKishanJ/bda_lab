@@ -3,7 +3,7 @@ import sys
 current_key = None
 running_sum = 0.0
 
-for line in sys.stdin():
+for line in sys.stdin:
     line = line.strip()
     if not line:
         continue
