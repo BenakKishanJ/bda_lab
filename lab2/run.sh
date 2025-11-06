@@ -1,1 +1,1 @@
-cat user_item_ratings.txt item_feature.txt | python mapper.py | sort | python reducer1.py | sort | python reducer2.py
+cat weather.csv | python weather_mapper.py | sort | python weather_reducer.py
