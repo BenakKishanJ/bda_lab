@@ -1,0 +1,44 @@
+a. Store customer_name, product_id, rating, comment and review_date
+
+1. Create / switch db
+
+use ecommerce;
+
+2. Create a collection
+
+db.reviews.insertMany([
+{ customer_name:"Alice", product_id:"P101", category:"Electronics", rating:4, comment:"Good quality, fast delivery.", review_date: ISODate("2025-09-01")},
+{ customer_name:"Bob", product_id:"P101", category:"Electronics", rating:5, comment:"Excellant product!", review_date: ISODate("2025-09-02")},
+{ customer_name:"Charlie", product_id:"P102", category:"Books", rating:3, comment:"Decent read but slow shipping", review_date: ISODate("2025-09-03")},
+{ customer_name:"David", product_id:"P103", category:"Clothing", rating:2, comment:"Poor quality material.", review_date: ISODate("2025-09-04")},
+{ customer_name:"Emma", product_id:"P102", category:"Books", rating:4, comment:"Enjoyed the book!", review_date: ISODate("2025-09-05")},
+]);
+
+3. Query the documents
+
+db.reviews.find();
+
+
+b. Count total reviews per product
+
+db.reviews.aggregate([ { $group:{_id:"$product_id", total_reviews:{$sum:1}}} ])
+
+c. Sort products by average rating
+
+db.reviews.aggregate([ { $group:{_id:"$product_id",avg_rating:{$avg:"$rating"}}}, {$sort:{avg_rating:-1}}])
+
+d. Display top 5 most-reviewed products
+
+db.reviews.aggregate([
+{ $group:{_id:"$product_id", total_reviews:{$sum:1}}},
+{$sort:{total_reviews:-1}},
+{$limit:5}
+])
+
+e. Aggregate average rating per product category
+
+db.reviews.aggregate([
+{$group:{_id:"$category", avg_rating:{$avg:"$rating"}}}
+])
+
+

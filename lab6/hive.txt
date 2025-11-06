@@ -1,0 +1,58 @@
+1. Start hive
+
+hive
+
+2. Create Hive Table
+
+CREATE TABLE cdr{
+    caller_id STRING,
+    receiver_id STRING,
+    duration INT,
+    timestamp STRING,
+    location STRING,
+  }
+  ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+  STORED AS TEXTFILE;
+
+  3. Load DATA
+
+  LOAD DATA LOCAL INPATH '/home/cloudera/cdr.csv' INTO TABLE cdr;
+
+  4. Queries
+
+  a. Top 5 callers by duration
+
+  SELECT caller_id, SUM(duration) AS total_duration
+  FROM cdr
+  GROUP BY caller_id
+  ORDER BY total_duration DESC
+  LIMIT 5;
+
+  b. Locations with most dropped calls 
+
+  SELECT location, COUNT(*) AS dropped_calls
+  FROM cdr
+  WHERE duration=0
+  GROUP BY location
+  ORDER BY dropped_calls DESC;
+
+  c. Create view for high-usage customers (assume high means total_duration>100 secs)
+
+  CREATE VIEW high_usage_customers AS 
+  SELECT caller_id, SUM(duration) AS total_duration, COUNT(*) AS total_calls
+  FROM cdr
+  GROUP BY caller_id
+  HAVING SUM(duration)>100;
+
+5. Indexing
+
+CREATE INDEX idx_caller_id 
+ON TABLE cdr(caller_id)
+AS 'COMPACT'
+WITH DEFERRED REBUILD;
+
+//Queries on caller_id cna be faster
+// Build the index:
+
+ALTER INDEX idx_caller_id ON cdr REBUILD;
+
